@@ -1,8 +1,30 @@
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { useState } from 'react';
 
 
 const SignUp = () => {
+    const [formData, setFormData] = useState({})
+
+    const handleChange = (e) => {
+        setFormData({...formData, [e.target.id]: e.target.value });
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(formData);
+        try {
+            const res = await fetch("/api/auth/signup", 
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            const data = await res.json();
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
   return (
       <div className="min-h-screen mt-20">
           <div className="p-3 flex max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -21,12 +43,13 @@ const SignUp = () => {
               </div>
               {/* right */}
               <div className="flex-1">
-                  <form className="flex max-w-md flex-col gap-4">
+                  <form className="flex max-w-md flex-col gap-4" onSubmit={handleSubmit}>
                       <div>
                           <div className="mb-2 block">
                               <Label htmlFor="username" value="Your username" />
                           </div>
                           <TextInput
+                            onChange={handleChange}
                               id="username"
                               type="text"
                               placeholder="username"
@@ -35,15 +58,17 @@ const SignUp = () => {
                       </div>
                       <div>
                           <div className="mb-2 block">
-                              <Label htmlFor="email1" value="Your email" />
+                              <Label htmlFor="email" value="Your email" />
                           </div>
-                          <TextInput id="email1" placeholder='your@company.com' type="email" required />
+                          <TextInput
+                            onChange={handleChange} id="email" placeholder='your@company.com' type="email" required />
                       </div>
                       <div>
                           <div className="mb-2 block">
                               <Label htmlFor="password" value="Your password" />
                           </div>
                           <TextInput
+                            onChange={handleChange}
                               id="password"
                               placeholder="password"
                               type="password"
