@@ -97,7 +97,7 @@ const SignUp = () => {
                           <TextInput
                               onChange={handleChange}
                               id="password"
-                              placeholder="password"
+                              placeholder="*******"
                               type="password"
                               //   required
                           />
