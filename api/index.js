@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import userRouter from "./routes/user.route.js";
 import "dotenv/config";
 
 
@@ -16,6 +17,8 @@ mongoose
     .catch((err) => {
         console.error("Error connecting to database:", err);
     });
+
+app.use("/api/users", userRouter);
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
