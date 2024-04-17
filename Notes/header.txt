@@ -1,0 +1,17 @@
+Using Flowbite, Tailwind, React icons
+
+
+cool gradient color -> bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+
+Navbar -> base component navbar
+TextInput -> base component text input
+Button -> base component button (pill->to make round the button, color->to chanage the default color, gradientDuoTone={"purpleToBlue"})
+
+<Navbar.Collapse> -> collapsable component
+    const path = useLocation().pathname;
+
+{/* Navbar.Link also creates an anchor tag internally, so 'as={"div"}' */}
+                  <Navbar.Link active={path === "/"} as={"div"}>
+                      <Link to="/">Home</Link>
+                  </Navbar.Link>
+<Navbar.Toggle /> -> while it Collapse this one will be visible as hamburger menu
