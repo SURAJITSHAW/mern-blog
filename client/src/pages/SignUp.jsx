@@ -1,18 +1,28 @@
-import { Link } from 'react-router-dom';
-import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { Link, useNavigate } from 'react-router-dom';
+import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from 'react';
+import { HiInformationCircle } from "react-icons/hi";
 
 
 const SignUp = () => {
     const [formData, setFormData] = useState({})
+    const [errorMessage, setErrorMessage] = useState(null)
+    const [loading, setLoading] = useState(false)
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({...formData, [e.target.id]: e.target.value });
+        setFormData({...formData, [e.target.id]: e.target.value.trim() });
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if(!formData.username || !formData.password || !formData.email){
+            return setErrorMessage("Please fill all the fields!!!");
+        }
         console.log(formData);
         try {
+            setLoading(true);
+            setErrorMessage(null)
             const res = await fetch("/api/auth/signup", 
             {
                 method: "POST",
@@ -20,9 +30,18 @@ const SignUp = () => {
                 body: JSON.stringify(formData)
             })
             const data = await res.json();
+            if(data.success === false) {
+                return setErrorMessage(data.message)
+            }
             console.log(data);
+
+            setLoading(false);
+            if(res.ok){
+                navigate("/sign-in");
+            }
         } catch (error) {
-            console.log(error);
+            setErrorMessage(error.message)
+            setLoading(false);
         }
     }
   return (
@@ -43,17 +62,20 @@ const SignUp = () => {
               </div>
               {/* right */}
               <div className="flex-1">
-                  <form className="flex max-w-md flex-col gap-4" onSubmit={handleSubmit}>
+                  <form
+                      className="flex max-w-md flex-col gap-4"
+                      onSubmit={handleSubmit}
+                  >
                       <div>
                           <div className="mb-2 block">
                               <Label htmlFor="username" value="Your username" />
                           </div>
                           <TextInput
-                            onChange={handleChange}
+                              onChange={handleChange}
                               id="username"
                               type="text"
                               placeholder="username"
-                              required
+                              //   required
                           />
                       </div>
                       <div>
@@ -61,26 +83,38 @@ const SignUp = () => {
                               <Label htmlFor="email" value="Your email" />
                           </div>
                           <TextInput
-                            onChange={handleChange} id="email" placeholder='your@company.com' type="email" required />
+                              onChange={handleChange}
+                              id="email"
+                              placeholder="your@company.com"
+                              type="email"
+                              //   required
+                          />
                       </div>
                       <div>
                           <div className="mb-2 block">
                               <Label htmlFor="password" value="Your password" />
                           </div>
                           <TextInput
-                            onChange={handleChange}
+                              onChange={handleChange}
                               id="password"
                               placeholder="password"
                               type="password"
-                              required
+                              //   required
                           />
                       </div>
                       {/* <div className="flex items-center gap-2">
                           <Checkbox id="remember" />
                           <Label htmlFor="remember">Remember me</Label>
                       </div> */}
-                      <Button gradientDuoTone={"purpleToPink"} type="submit">
-                          Sign Up
+                      <Button gradientDuoTone={"purpleToPink"} type="submit" disabled={loading}>
+                          {
+                            loading ? (
+                                <>
+                                    <Spinner size={"sm"}/>
+                                    <p className='pl-2'>Loading...</p>
+                                </>
+                            ) : "Sign Up"
+                          }
                       </Button>
                   </form>
                   <div className="text-sm mt-5 flex gap-2">
@@ -89,6 +123,12 @@ const SignUp = () => {
                           Sign In
                       </Link>
                   </div>
+
+                  {errorMessage && (
+                      <Alert className='mt-5' color="failure" icon={HiInformationCircle}>
+                          <span className="font-medium"> {errorMessage}</span>
+                      </Alert>
+                  )}
               </div>
           </div>
       </div>
