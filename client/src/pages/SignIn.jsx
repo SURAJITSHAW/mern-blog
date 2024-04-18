@@ -2,13 +2,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { HiInformationCircle } from "react-icons/hi";
+import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice.js";
+import { useSelector, useDispatch } from "react-redux";
+
 
 const SignIn = () => {
     const [formData, setFormData] = useState({});
-    const [errorMessage, setErrorMessage] = useState(null);
-    const [loading, setLoading] = useState(false);
+    // ! primitive way of handling state
+    // const [errorMessage, setErrorMessage] = useState(null);
+    // const [loading, setLoading] = useState(false);
+
+    // ! advance way using redux
+    const { loading, error: errorMessage } = useSelector((state) => state.user)
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -16,12 +24,13 @@ const SignIn = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.password || !formData.email) {
-            return setErrorMessage("Please fill all the fields!!!");
+            return dispatch(signInFailure("Please fill all the fields!!!"));
         }
         console.log(formData);
         try {
-            setLoading(true);
-            setErrorMessage(null);
+            // setLoading(true);
+            // setErrorMessage(null);
+            dispatch(signInStart())
             const res = await fetch("/api/auth/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -29,19 +38,21 @@ const SignIn = () => {
             });
             const data = await res.json();
             if (data.success === false) {
-                return setErrorMessage(data.message);
+                return dispatch(signInFailure(data.message));
             }
             console.log(data);
 
-            setLoading(false);
             if (res.ok) {
+                dispatch(signInSuccess(data));
                 navigate("/");
             }
         } catch (error) {
-            setErrorMessage(error.message);
-            setLoading(false);
+            // setErrorMessage(error.message);
+            // setLoading(false);
+            dispatch(signInFailure(error.message));
         }
     };
+
     return (
         <div className="min-h-screen mt-20">
             <div className="p-3 flex max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-7">
