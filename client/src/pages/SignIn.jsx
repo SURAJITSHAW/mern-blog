@@ -4,7 +4,7 @@ import { useState } from "react";
 import { HiInformationCircle } from "react-icons/hi";
 import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice.js";
 import { useSelector, useDispatch } from "react-redux";
-
+import OAuth from "../components/OAuth.jsx"
 
 const SignIn = () => {
     const [formData, setFormData] = useState({});
@@ -120,6 +120,7 @@ const SignIn = () => {
                                 "Sign In"
                             )}
                         </Button>
+                        <OAuth />
                     </form>
                     <div className="text-sm mt-5 flex gap-2">
                         <span>Don't have an account?</span>
